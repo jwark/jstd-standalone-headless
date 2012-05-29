@@ -1,0 +1,8 @@
+This software will eventually be released under the apache licence.
+
+sample/jshamcrest.js
+	Copyright (c) 2009-2010 Daniel Fernandes Martins
+	Licensed under the BSD Licence
+support/Assert.js taken form jstestdriver project
+	Copyright Google Inc.
+	Licensed under the Apache Licence 2.0

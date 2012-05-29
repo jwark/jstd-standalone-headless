@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Standalone JSTestRunner</title>
+		<!-- standalone runner -->
+		<script>
+		(function() {
+			var t0 = Date.now();
+
+			var global = this;
+			var doc = global.document;
+			var script0 = doc.getElementsByTagName('script')[0];
+			var suites = [];
+
+			global.TestCase = function( suite_name, proto ) {
+				var s = function(){ };
+				if( proto ) {
+					s.prototype = proto;
+				}
+				suites.push( { con: s, name: suite_name });
+				return s;
+			};
+
+			function run_suite() {
+				var total = 0, fail = 0, error = 0;
+				console.log("starting " + suites.length + " suite" + ( suites.length === 1 ? "" : "s" ));
+				suites.forEach( function( s ) {
+					console.log("running " + s.name );
+					var suite = new s.con();
+					for( var test in suite ) {
+						if( /^test/.test( test ) ) {
+							try {
+								total++;
+								console.log("  " + test );
+								("setUp" in suite) && suite["setUp"]();
+								suite[test]();
+								("tearDown" in suite) && suite["tearDown"]();
+							} catch( e ) {
+								if( e.name === "AssertError" ) {
+									fail++;
+									console.log("AssertError", e);
+									console.log(e.stack);
+								} else {
+									error++;
+									console.log("Unexpected Error", e );
+									console.log(e.stack);
+								}
+							}
+						}
+					}
+				});
+				console.log( "ran", total, "tests in", Date.now() - t0, "ms" );
+				console.log( "passed:", ( total - fail - error ), "failed:", fail, "error:", error);
+				document.body.style.backgroundColor = (fail + error === 0) ? 'green' : 'red';
+				var status = 'success';
+				if (fail > 0 || error > 0) { status = 'fail'}
+				console.log( "ConsoleReporter finished:", status);
+			}
+
+			var scripts = [];
+			var loaded = [];
+
+			function load_scripts( scripts ) {
+				load_script( scripts.shift() );
+
+				function load_script( src ) {
+					var st0 = Date.now();
+					if( !src ) {
+						console.log("loaded " + loaded.length + " scripts:\n", loaded.join('\n') );
+						run_suite();
+						return;
+					}
+					var s = doc.createElement('script');
+					s.type = 'text/javascript';
+					s.src = src;
+					s.onload = function() {
+						loaded.push( "loaded " + src + " in " + ( Date.now() - st0 ) + "ms" );
+						load_script( scripts.shift() );
+					}
+					script0.parentNode.insertBefore(s, script0);
+				}
+			}
+
+			function load_jstd_conf() {
+				var xhr = new XMLHttpRequest();
+				xhr.open("GET", "jsTestDriver.conf");
+				xhr.onreadystatechange = function() {
+					if( xhr.readyState === 4 ) {
+						var data = xhr.responseText;
+						var mode = null;
+						data.split(/\n/).forEach( function( line ) {
+							if( /^\s-\s/.test( line ) ) {
+								scripts.push(line.match( /\s-\s(\S+)/ )[1] );
+							}
+						});
+						load_scripts( scripts );
+					}
+				};
+				xhr.send();
+			}
+
+			load_jstd_conf();
+		})();
+		</script>
+	</head>
+	<body></body>
+</html>
+
+
