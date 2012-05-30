@@ -8,16 +8,30 @@ Allows you to run jsTestDriver tests from the command line without running a ser
 
 Prints a lot of interesting data into the console
 
-Requires jstd.html to be in the same directory as jsTestDriver.conf
+Requires jstd-headless.html to be in the same directory as jsTestDriver.conf
 
 If you are not using an external assert library like hamcrest, you will need to include the Assert.js from jstestdriver source
-This is in the support directory. Simply creating a link tag in jstd.html should be sufficient.
+This is in the support directory. Simply creating a link tag in jstd-headless.html should be sufficient.
 
+
+Setup
+=====
 install PhantomJS
 $ brew install phantomjs
 
-run the tests (listed in jsTestDriver.conf)
-$ phantomjs run_jstd_test.coffee jstd.html
+
+Running tests
+=============
+The script can be run in 3 modes:
+
+1) supply no args and the script will list out the tests from your jsTestDriver.conf (must be individual files, no pattern matching is supported).
+ $ phantomjs run_jstd_test.coffee
+
+2) pass through a path to a test file.
+ $ phantomjs run_jstd_test.coffee 'sample/test/myClassTest.js'
+
+3) pass through a path containing test files.
+ $ phantomjs run_jstd_test.coffee 'sample/test'
 
 
 Much code was copied from:

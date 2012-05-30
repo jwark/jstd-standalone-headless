@@ -10,6 +10,6 @@ TestCase("MyClass", {
 		p.walk();
 		p.stop();
 
-		assertThat( p.getSpeed(), equalTo( 0 ) );
+		assertThat( p.getSpeed(), equalTo( 2 ) );
 	}
 });

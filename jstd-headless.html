@@ -38,12 +38,12 @@
 							} catch( e ) {
 								if( e.name === "AssertError" ) {
 									fail++;
-									console.log("AssertError", e);
-									console.log(e.stack);
+									console.log("\033[1m", "AssertError", e, "\033[0m");
+									e.stack && console.log(e.stack);
 								} else {
 									error++;
-									console.log("Unexpected Error", e );
-									console.log(e.stack);
+									console.log("\033[1m", "Unexpected Error", e, "\033[0m");
+									e.stack && console.log(e.stack);
 								}
 							}
 						}
@@ -60,13 +60,12 @@
 			var scripts = [];
 			var loaded = [];
 
-			function load_scripts( scripts ) {
+			window.load_scripts = function load_scripts( scripts ) {
 				load_script( scripts.shift() );
 
 				function load_script( src ) {
 					var st0 = Date.now();
 					if( !src ) {
-						console.log("loaded " + loaded.length + " scripts:\n", loaded.join('\n') );
 						run_suite();
 						return;
 					}
@@ -74,32 +73,12 @@
 					s.type = 'text/javascript';
 					s.src = src;
 					s.onload = function() {
-						loaded.push( "loaded " + src + " in " + ( Date.now() - st0 ) + "ms" );
 						load_script( scripts.shift() );
 					}
 					script0.parentNode.insertBefore(s, script0);
 				}
 			}
 
-			function load_jstd_conf() {
-				var xhr = new XMLHttpRequest();
-				xhr.open("GET", "jsTestDriver.conf");
-				xhr.onreadystatechange = function() {
-					if( xhr.readyState === 4 ) {
-						var data = xhr.responseText;
-						var mode = null;
-						data.split(/\n/).forEach( function( line ) {
-							if( /^\s-\s/.test( line ) ) {
-								scripts.push(line.match( /\s-\s(\S+)/ )[1] );
-							}
-						});
-						load_scripts( scripts );
-					}
-				};
-				xhr.send();
-			}
-
-			load_jstd_conf();
 		})();
 		</script>
 	</head>
