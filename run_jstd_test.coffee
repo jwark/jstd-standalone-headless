@@ -24,12 +24,12 @@ loadScriptsFromFile = (confFile, section) ->
   currentSection = null
   data = fs.read(confFile)
   data.split(/\n/).forEach ( line ) ->
-    if /^load/.test(line)
+    if /^load:/.test(line)
       currentSection = "load"
-    else if /^test/.test(line)
+    else if /^test:/.test(line)
       currentSection = "test"
     else if currentSection == section
-      scripts.push(line.match( /\s-\s(\S+)/ )[1] ) if /^\s-\s/.test( line )
+      scripts.push(line.match( /\s+-\s+(\S+)/ )[1] ) if /^\s+-\s+/.test( line )
   scripts
 
 testScripts = []
